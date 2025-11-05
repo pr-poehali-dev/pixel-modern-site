@@ -275,129 +275,85 @@ const PixelEditor = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-4 lg:col-span-2">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Редактор мозаики</h2>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Icon name="Upload" size={16} />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleReset}
-                  disabled={!image}
-                >
-                  <Icon name="RotateCcw" size={16} />
-                </Button>
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  onClick={handleSave}
-                  disabled={!image}
-                >
-                  <Icon name="Download" size={16} />
-                </Button>
-              </div>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-
-            {!image ? (
-              <div 
-                className="border-2 border-dashed border-border rounded-lg p-12 text-center cursor-pointer hover:border-primary transition-colors"
+      <Card className="p-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h2 className="text-xl font-bold">Редактор мозаики</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Icon name="ImagePlus" size={48} className="mx-auto mb-3 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-1">Загрузите изображение</h3>
-                <p className="text-sm text-muted-foreground">Нажмите или перетащите файл</p>
-              </div>
-            ) : (
-              <div className="overflow-auto max-h-[70vh] border-2 border-border rounded-lg">
-                <canvas
-                  ref={canvasRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  onWheel={handleWheel}
-                  className="cursor-move max-w-full h-auto"
-                />
-              </div>
-            )}
+                <Icon name="Upload" size={16} />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleReset}
+                disabled={!image}
+              >
+                <Icon name="RotateCcw" size={16} />
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={handleSave}
+                disabled={!image}
+              >
+                <Icon name="Download" size={16} />
+              </Button>
+            </div>
           </div>
-        </Card>
 
-        <Card className="p-4">
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 items-end">
             <div>
-              <Label className="text-sm font-semibold mb-2 block">Тип мозаики</Label>
-              <RadioGroup value={mosaicType} onValueChange={(v) => setMosaicType(v as MosaicType)}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="lego" id="lego" />
-                  <Label htmlFor="lego" className="cursor-pointer">Лего</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="round" id="round" />
-                  <Label htmlFor="round" className="cursor-pointer">Круглые стразы</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="square" id="square" />
-                  <Label htmlFor="square" className="cursor-pointer">Квадратные стразы</Label>
-                </div>
-              </RadioGroup>
+              <Label className="text-xs mb-1 block">Тип мозаики</Label>
+              <Select value={mosaicType} onValueChange={(v) => setMosaicType(v as MosaicType)}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="lego">Лего</SelectItem>
+                  <SelectItem value="round">Круглые стразы</SelectItem>
+                  <SelectItem value="square">Квадратные стразы</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {showBaseTypeSelector && (
               <div>
-                <Label className="text-sm font-semibold mb-2 block">Основа</Label>
-                <RadioGroup value={baseType} onValueChange={(v) => setBaseType(v as BaseType)}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="canvas" id="canvas" />
-                    <Label htmlFor="canvas" className="cursor-pointer">Холст</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="stretcher" id="stretcher" />
-                    <Label htmlFor="stretcher" className="cursor-pointer">Подрамник</Label>
-                  </div>
-                </RadioGroup>
+                <Label className="text-xs mb-1 block">Основа</Label>
+                <Select value={baseType} onValueChange={(v) => setBaseType(v as BaseType)}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="canvas">Холст</SelectItem>
+                    <SelectItem value="stretcher">Подрамник</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
             <div>
-              <Label className="text-sm font-semibold mb-2 block">Ориентация</Label>
-              <RadioGroup value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="landscape" id="landscape" />
-                  <Label htmlFor="landscape" className="cursor-pointer">Альбомная</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="portrait" id="portrait" />
-                  <Label htmlFor="portrait" className="cursor-pointer">Книжная</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="square" id="square-orient" />
-                  <Label htmlFor="square-orient" className="cursor-pointer">Квадрат</Label>
-                </div>
-              </RadioGroup>
+              <Label className="text-xs mb-1 block">Ориентация</Label>
+              <Select value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="landscape">Альбомная</SelectItem>
+                  <SelectItem value="portrait">Книжная</SelectItem>
+                  <SelectItem value="square">Квадрат</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label className="text-sm font-semibold mb-2 block">Формат</Label>
+            <div className="lg:col-span-2">
+              <Label className="text-xs mb-1 block">Формат</Label>
               <Select value={format} onValueChange={handleFormatChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -409,53 +365,85 @@ const PixelEditor = () => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            <div>
-              <Label className="text-sm font-semibold mb-2 block">
-                Масштаб: {scale}%
-              </Label>
-              <Slider
-                value={[scale]}
-                onValueChange={([v]) => setScale(v)}
-                min={10}
-                max={300}
-                step={5}
-                disabled={!image}
+          {image && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs mb-1 block">Масштаб: {scale}%</Label>
+                <Slider
+                  value={[scale]}
+                  onValueChange={([v]) => setScale(v)}
+                  min={10}
+                  max={300}
+                  step={5}
+                  className="mb-2"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRotate}
+                  className="flex-1"
+                >
+                  <Icon name="RotateCw" size={16} className="mr-1" />
+                  Повернуть
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleFlipH}
+                  className="flex-1"
+                >
+                  <Icon name="FlipHorizontal" size={16} className="mr-1" />
+                  Отразить Г
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleFlipV}
+                  className="flex-1"
+                >
+                  <Icon name="FlipVertical" size={16} className="mr-1" />
+                  Отразить В
+                </Button>
+              </div>
+            </div>
+          )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+          {!image ? (
+            <div 
+              className="border-2 border-dashed border-border rounded-lg p-12 text-center cursor-pointer hover:border-primary transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Icon name="ImagePlus" size={48} className="mx-auto mb-3 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-1">Загрузите изображение</h3>
+              <p className="text-sm text-muted-foreground">Нажмите или перетащите файл</p>
+            </div>
+          ) : (
+            <div className="overflow-auto max-h-[70vh] border-2 border-border rounded-lg">
+              <canvas
+                ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onWheel={handleWheel}
+                className="cursor-move max-w-full h-auto"
               />
             </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRotate}
-                disabled={!image}
-                className="w-full"
-              >
-                <Icon name="RotateCw" size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFlipH}
-                disabled={!image}
-                className="w-full"
-              >
-                <Icon name="FlipHorizontal" size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFlipV}
-                disabled={!image}
-                className="w-full"
-              >
-                <Icon name="FlipVertical" size={16} />
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 };

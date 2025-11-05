@@ -103,15 +103,20 @@ const Index = () => {
                   color: 'from-accent to-blue-600'
                 }
               ].map((feature, i) => (
-                <Card key={i} className="p-6 space-y-3 hover:scale-105 transition-transform cursor-pointer group relative overflow-hidden">
+                <Card 
+                  key={i} 
+                  className="p-6 space-y-3 hover:scale-105 transition-transform cursor-pointer group relative overflow-hidden"
+                  contentEditable
+                  suppressContentEditableWarning
+                >
                   <div className="absolute -top-2 -right-2">
                     <MosaicDecor type={i === 0 ? 'round' : i === 1 ? 'square' : 'lego'} />
                   </div>
                   <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} flex items-center justify-center relative`}>
                     <Icon name={feature.icon as any} size={24} className="text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.desc}</p>
+                  <h3 className="text-xl font-semibold" contentEditable suppressContentEditableWarning>{feature.title}</h3>
+                  <p className="text-muted-foreground" contentEditable suppressContentEditableWarning>{feature.desc}</p>
                 </Card>
               ))}
             </section>
