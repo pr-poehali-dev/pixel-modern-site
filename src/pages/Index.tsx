@@ -72,10 +72,7 @@ const Index = () => {
                   size="lg" 
                   onClick={() => setActiveTab('editor')}
                   className="gap-2 text-lg"
-                >
-                  <Icon name="Sparkles" size={20} />
-                  Открыть редактор
-                </Button>
+                >Создать мозайку</Button>
                 <Button 
                   size="lg" 
                   variant="outline"
