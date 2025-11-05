@@ -7,6 +7,7 @@ import Gallery from '@/components/Gallery';
 import Instructions from '@/components/Instructions';
 import About from '@/components/About';
 import Contacts from '@/components/Contacts';
+import MosaicDecor from '@/components/MosaicDecor';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -18,7 +19,7 @@ const Index = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2 animate-fade-in">
               <div className="w-8 h-8 bg-gradient-to-br from-primary via-secondary to-accent" />
-              <span className="text-xl font-bold">PIXEL MOSAIC</span>
+              <span className="text-xl font-bold">MARlik Pixel Mix</span>
             </div>
             
             <div className="flex gap-1">
@@ -49,13 +50,22 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {activeTab === 'home' && (
           <div className="animate-fade-in space-y-8">
-            <section className="text-center py-20 space-y-6">
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                PIXEL MOSAIC
+            <section className="text-center py-20 space-y-6 relative">
+              <div className="absolute top-10 left-10 animate-pulse">
+                <MosaicDecor type="round" />
+              </div>
+              <div className="absolute bottom-10 right-10 animate-pulse delay-100">
+                <MosaicDecor type="square" />
+              </div>
+              <div className="absolute top-20 right-20 animate-pulse delay-200">
+                <MosaicDecor type="lego" />
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent relative">
+                MARlik Pixel Mix
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Создавайте пиксельные шедевры в современном редакторе. 
-                Рисуйте, сохраняйте и делитесь своими творениями.
+                Профессиональный редактор для подготовки изображений к печати. 
+                Обрезайте, масштабируйте и трансформируйте под нужный формат.
               </p>
               <div className="flex gap-4 justify-center pt-4">
                 <Button 
@@ -64,7 +74,7 @@ const Index = () => {
                   className="gap-2 text-lg"
                 >
                   <Icon name="Sparkles" size={20} />
-                  Начать создавать
+                  Открыть редактор
                 </Button>
                 <Button 
                   size="lg" 
@@ -81,26 +91,29 @@ const Index = () => {
             <section className="grid md:grid-cols-3 gap-6">
               {[
                 {
-                  icon: 'Palette',
-                  title: 'Богатая палитра',
-                  desc: 'Десятки готовых цветов для вашего творчества',
+                  icon: 'Crop',
+                  title: 'Точная обрезка',
+                  desc: 'Форматы А0-А4 и популярные размеры для печати',
                   color: 'from-primary to-purple-600'
                 },
                 {
-                  icon: 'Wand2',
-                  title: 'Удобные инструменты',
-                  desc: 'Карандаш, ластик, заливка и другие функции',
+                  icon: 'Move',
+                  title: 'Удобное управление',
+                  desc: 'Перемещение мышью, масштаб колёсиком, трансформация',
                   color: 'from-secondary to-pink-600'
                 },
                 {
                   icon: 'Download',
-                  title: 'Экспорт работ',
-                  desc: 'Сохраняйте свои творения в PNG формате',
+                  title: 'Готово к печати',
+                  desc: 'Экспорт в высоком качестве PNG',
                   color: 'from-accent to-blue-600'
                 }
               ].map((feature, i) => (
-                <Card key={i} className="p-6 space-y-3 hover:scale-105 transition-transform cursor-pointer group">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} flex items-center justify-center`}>
+                <Card key={i} className="p-6 space-y-3 hover:scale-105 transition-transform cursor-pointer group relative overflow-hidden">
+                  <div className="absolute -top-2 -right-2">
+                    <MosaicDecor type={i === 0 ? 'round' : i === 1 ? 'square' : 'lego'} />
+                  </div>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} flex items-center justify-center relative`}>
                     <Icon name={feature.icon as any} size={24} className="text-white" />
                   </div>
                   <h3 className="text-xl font-semibold">{feature.title}</h3>
@@ -120,7 +133,7 @@ const Index = () => {
 
       <footer className="border-t border-border mt-20 py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>© 2024 Pixel Mosaic. Создано с ❤️ для любителей пиксель-арта</p>
+          <p>© 2024 MARlik Pixel Mix. Профессиональная подготовка изображений</p>
         </div>
       </footer>
     </div>

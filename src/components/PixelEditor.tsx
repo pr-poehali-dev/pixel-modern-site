@@ -188,9 +188,19 @@ const PixelEditor = () => {
 
   const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
     if (!image) return;
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -5 : 5;
-    setScale((prev) => Math.max(10, Math.min(300, prev + delta)));
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    if (mouseX >= 0 && mouseX <= rect.width && mouseY >= 0 && mouseY <= rect.height) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -5 : 5;
+      setScale((prev) => Math.max(10, Math.min(300, prev + delta)));
+    }
   };
 
   return (

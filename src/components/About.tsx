@@ -6,26 +6,26 @@ const About = () => {
     <div className="animate-fade-in space-y-8 max-w-4xl mx-auto">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">О проекте</h1>
-        <p className="text-muted-foreground">История создания Pixel Mosaic</p>
+        <p className="text-muted-foreground">История создания MARlik Pixel Mix</p>
       </div>
 
       <Card className="p-8 space-y-6">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Что такое Pixel Mosaic?</h2>
+          <h2 className="text-2xl font-bold">Что такое MARlik Pixel Mix?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Pixel Mosaic — это современный веб-редактор для создания пиксельной графики. 
-            Проект создан для художников, дизайнеров и всех, кто любит pixel art. 
-            Мы объединили классическую эстетику пиксельной графики с современными 
-            веб-технологиями, чтобы создать удобный и красивый инструмент для творчества.
+            MARlik Pixel Mix — это профессиональный веб-редактор для подготовки изображений к печати. 
+            Проект создан для художников, дизайнеров, мастеров алмазной мозаики и всех, 
+            кто работает с печатью изображений. Мы объединили удобство веб-технологий 
+            с профессиональными инструментами обработки изображений.
           </p>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Миссия проекта</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Мы хотим сделать создание пиксельной графики доступным каждому. Никаких сложных 
-            программ, только браузер и ваше воображение. Pixel Mosaic работает полностью 
-            онлайн — просто откройте сайт и начните творить!
+            Мы хотим упростить подготовку изображений для печати. Никаких сложных 
+            программ — только браузер и ваши изображения. MARlik Pixel Mix работает полностью 
+            онлайн: выбирайте формат, обрезайте, масштабируйте и сохраняйте!
           </p>
         </div>
 
