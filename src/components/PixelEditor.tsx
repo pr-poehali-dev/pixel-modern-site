@@ -3,14 +3,27 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
-type Format = 'a4' | 'a3' | 'a2' | 'a1' | 'a0' | '20x30' | '30x40' | '40x50' | '40x60' | '50x70' | '60x80' | '70x90' | '80x120' | '90x120' | '100x120';
+type MosaicType = 'lego' | 'round' | 'square';
+type BaseType = 'canvas' | 'stretcher';
+type Orientation = 'landscape' | 'portrait' | 'square';
+
+interface FormatOption {
+  width: number;
+  height: number;
+  label: string;
+}
 
 const PixelEditor = () => {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [format, setFormat] = useState<Format>('a4');
+  const [mosaicType, setMosaicType] = useState<MosaicType>('lego');
+  const [baseType, setBaseType] = useState<BaseType>('canvas');
+  const [orientation, setOrientation] = useState<Orientation>('landscape');
+  const [format, setFormat] = useState<string>('a4');
   const [scale, setScale] = useState(100);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -22,27 +35,82 @@ const PixelEditor = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const formatRatios: Record<Format, { width: number; height: number; label: string }> = {
-    'a4': { width: 420, height: 594, label: 'Формат А4 (210×297 мм)' },
-    'a3': { width: 594, height: 840, label: 'Формат А3 (297×420 мм)' },
-    'a2': { width: 840, height: 1188, label: 'Формат А2 (420×594 мм)' },
-    'a1': { width: 1188, height: 1682, label: 'Формат А1 (594×841 мм)' },
-    'a0': { width: 1682, height: 2378, label: 'Формат А0 (841×1189 мм)' },
-    '20x30': { width: 200, height: 300, label: '20×30 см' },
-    '30x40': { width: 300, height: 400, label: '30×40 см' },
-    '40x50': { width: 400, height: 500, label: '40×50 см' },
-    '40x60': { width: 400, height: 600, label: '40×60 см' },
-    '50x70': { width: 500, height: 700, label: '50×70 см' },
-    '60x80': { width: 600, height: 800, label: '60×80 см' },
-    '70x90': { width: 700, height: 900, label: '70×90 см' },
-    '80x120': { width: 800, height: 1200, label: '80×120 см' },
-    '90x120': { width: 900, height: 1200, label: '90×120 см' },
-    '100x120': { width: 1000, height: 1200, label: '100×120 см' },
+  const landscapeFormats: Record<string, FormatOption> = {
+    'a4': { width: 420, height: 594, label: 'Формат А4 (210x297)' },
+    'a3': { width: 594, height: 840, label: 'Формат А3 (297x420)' },
+    'a2': { width: 840, height: 1188, label: 'Формат А2 (420x594)' },
+    'a1': { width: 1188, height: 1682, label: 'Формат А1 (594x841)' },
+    'a0': { width: 1682, height: 2378, label: 'Формат А0 (841x1189)' },
+    '20x30': { width: 200, height: 300, label: '20x30 см.' },
+    '30x40': { width: 300, height: 400, label: '30x40 см.' },
+    '40x50': { width: 400, height: 500, label: '40x50 см.' },
+    '40x60': { width: 400, height: 600, label: '40x60 см.' },
+    '50x70': { width: 500, height: 700, label: '50x70 см.' },
+    '60x80': { width: 600, height: 800, label: '60x80 см.' },
+    '70x90': { width: 700, height: 900, label: '70x90 см.' },
+    '80x120': { width: 800, height: 1200, label: '80x120 см.' },
+    '90x120': { width: 900, height: 1200, label: '90x120 см.' },
+    '100x120': { width: 1000, height: 1200, label: '100x120 см.' },
+  };
+
+  const portraitFormats: Record<string, FormatOption> = {
+    'a4': { width: 594, height: 420, label: 'Формат А4 (297x210)' },
+    'a3': { width: 840, height: 594, label: 'Формат А3 (420x297)' },
+    'a2': { width: 1188, height: 840, label: 'Формат А2 (594x420)' },
+    'a1': { width: 1682, height: 1188, label: 'Формат А1 (841x594)' },
+    'a0': { width: 2378, height: 1682, label: 'Формат А0 (1189x841)' },
+    '30x20': { width: 300, height: 200, label: '30x20 см.' },
+    '40x30': { width: 400, height: 300, label: '40x30 см.' },
+    '50x40': { width: 500, height: 400, label: '50x40 см.' },
+    '60x40': { width: 600, height: 400, label: '60x40 см.' },
+    '70x50': { width: 700, height: 500, label: '70x50 см.' },
+    '80x60': { width: 800, height: 600, label: '80x60 см.' },
+    '90x70': { width: 900, height: 700, label: '90x70 см.' },
+    '120x80': { width: 1200, height: 800, label: '120x80 см.' },
+    '120x90': { width: 1200, height: 900, label: '120x90 см.' },
+    '120x100': { width: 1200, height: 1000, label: '120x100 см.' },
+  };
+
+  const squareFormats: Record<string, FormatOption> = {
+    '20x20': { width: 200, height: 200, label: '20x20 см.' },
+    '30x30': { width: 300, height: 300, label: '30x30 см.' },
+    '40x40': { width: 400, height: 400, label: '40x40 см.' },
+    '50x50': { width: 500, height: 500, label: '50x50 см.' },
+    '60x60': { width: 600, height: 600, label: '60x60 см.' },
+    '70x70': { width: 700, height: 700, label: '70x70 см.' },
+    '80x80': { width: 800, height: 800, label: '80x80 см.' },
+    '90x90': { width: 900, height: 900, label: '90x90 см.' },
+    '100x100': { width: 1000, height: 1000, label: '100x100 см.' },
+    '110x110': { width: 1100, height: 1100, label: '110x110 см.' },
+    '120x120': { width: 1200, height: 1200, label: '120x120 см.' },
+  };
+
+  const getFormats = () => {
+    switch (orientation) {
+      case 'landscape':
+        return landscapeFormats;
+      case 'portrait':
+        return portraitFormats;
+      case 'square':
+        return squareFormats;
+    }
+  };
+
+  const getCurrentDimensions = (): FormatOption => {
+    const formats = getFormats();
+    return formats[format] || formats['a4'];
   };
 
   useEffect(() => {
+    const formats = getFormats();
+    if (!formats[format]) {
+      setFormat(Object.keys(formats)[0]);
+    }
+  }, [orientation]);
+
+  useEffect(() => {
     drawCanvas();
-  }, [image, format, scale, position, rotation, flipH, flipV]);
+  }, [image, format, scale, position, rotation, flipH, flipV, orientation]);
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
@@ -51,7 +119,7 @@ const PixelEditor = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dimensions = formatRatios[format];
+    const dimensions = getCurrentDimensions();
     canvas.width = dimensions.width;
     canvas.height = dimensions.height;
 
@@ -107,7 +175,7 @@ const PixelEditor = () => {
   };
 
   const centerImage = (img: HTMLImageElement) => {
-    const dimensions = formatRatios[format];
+    const dimensions = getCurrentDimensions();
     const scaleFactor = Math.min(
       dimensions.width / img.width,
       dimensions.height / img.height
@@ -138,7 +206,7 @@ const PixelEditor = () => {
     setIsDragging(false);
   };
 
-  const handleFormatChange = (newFormat: Format) => {
+  const handleFormatChange = (newFormat: string) => {
     setFormat(newFormat);
     if (image) {
       centerImage(image);
@@ -157,7 +225,7 @@ const PixelEditor = () => {
     }
 
     const link = document.createElement('a');
-    link.download = `image-${format}-${Date.now()}.png`;
+    link.download = `mosaic-${mosaicType}-${format}-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
 
@@ -203,13 +271,15 @@ const PixelEditor = () => {
     }
   };
 
+  const showBaseTypeSelector = mosaicType === 'round' || mosaicType === 'square';
+
   return (
-    <div className="animate-fade-in space-y-6">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <Card className="p-6 flex-1">
-          <div className="space-y-4">
+    <div className="animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="p-4 lg:col-span-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Редактор изображений</h2>
+              <h2 className="text-xl font-bold">Редактор мозаики</h2>
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
@@ -247,149 +317,144 @@ const PixelEditor = () => {
 
             {!image ? (
               <div 
-                className="border-2 border-dashed border-border rounded-lg p-20 text-center cursor-pointer hover:border-primary transition-colors"
+                className="border-2 border-dashed border-border rounded-lg p-12 text-center cursor-pointer hover:border-primary transition-colors"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Icon name="ImagePlus" size={64} className="mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2">Загрузите изображение</h3>
-                <p className="text-muted-foreground">Нажмите или перетащите файл сюда</p>
+                <Icon name="ImagePlus" size={48} className="mx-auto mb-3 text-muted-foreground" />
+                <h3 className="text-lg font-semibold mb-1">Загрузите изображение</h3>
+                <p className="text-sm text-muted-foreground">Нажмите или перетащите файл</p>
               </div>
             ) : (
-              <div className="flex justify-center">
+              <div className="overflow-auto max-h-[70vh] border-2 border-border rounded-lg">
                 <canvas
                   ref={canvasRef}
-                  className="border-2 border-primary cursor-move shadow-lg"
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
                   onWheel={handleWheel}
+                  className="cursor-move max-w-full h-auto"
                 />
               </div>
             )}
           </div>
         </Card>
 
-        <div className="w-full lg:w-80 space-y-4">
-          <Card className="p-6 space-y-4">
-            <h3 className="font-semibold text-lg">Формат</h3>
-            <Select value={format} onValueChange={(v) => handleFormatChange(v as Format)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="a4">{formatRatios.a4.label}</SelectItem>
-                <SelectItem value="a3">{formatRatios.a3.label}</SelectItem>
-                <SelectItem value="a2">{formatRatios.a2.label}</SelectItem>
-                <SelectItem value="a1">{formatRatios.a1.label}</SelectItem>
-                <SelectItem value="a0">{formatRatios.a0.label}</SelectItem>
-                <SelectItem value="20x30">{formatRatios['20x30'].label}</SelectItem>
-                <SelectItem value="30x40">{formatRatios['30x40'].label}</SelectItem>
-                <SelectItem value="40x50">{formatRatios['40x50'].label}</SelectItem>
-                <SelectItem value="40x60">{formatRatios['40x60'].label}</SelectItem>
-                <SelectItem value="50x70">{formatRatios['50x70'].label}</SelectItem>
-                <SelectItem value="60x80">{formatRatios['60x80'].label}</SelectItem>
-                <SelectItem value="70x90">{formatRatios['70x90'].label}</SelectItem>
-                <SelectItem value="80x120">{formatRatios['80x120'].label}</SelectItem>
-                <SelectItem value="90x120">{formatRatios['90x120'].label}</SelectItem>
-                <SelectItem value="100x120">{formatRatios['100x120'].label}</SelectItem>
-              </SelectContent>
-            </Select>
-          </Card>
+        <Card className="p-4">
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">Тип мозаики</Label>
+              <RadioGroup value={mosaicType} onValueChange={(v) => setMosaicType(v as MosaicType)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="lego" id="lego" />
+                  <Label htmlFor="lego" className="cursor-pointer">Лего</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="round" id="round" />
+                  <Label htmlFor="round" className="cursor-pointer">Круглые стразы</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="square" id="square" />
+                  <Label htmlFor="square" className="cursor-pointer">Квадратные стразы</Label>
+                </div>
+              </RadioGroup>
+            </div>
 
-          <Card className="p-6 space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Масштаб</h3>
-                <span className="text-sm text-muted-foreground">{scale.toFixed(0)}%</span>
+            {showBaseTypeSelector && (
+              <div>
+                <Label className="text-sm font-semibold mb-2 block">Основа</Label>
+                <RadioGroup value={baseType} onValueChange={(v) => setBaseType(v as BaseType)}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="canvas" id="canvas" />
+                    <Label htmlFor="canvas" className="cursor-pointer">Холст</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="stretcher" id="stretcher" />
+                    <Label htmlFor="stretcher" className="cursor-pointer">Подрамник</Label>
+                  </div>
+                </RadioGroup>
               </div>
+            )}
+
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">Ориентация</Label>
+              <RadioGroup value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="landscape" id="landscape" />
+                  <Label htmlFor="landscape" className="cursor-pointer">Альбомная</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="portrait" id="portrait" />
+                  <Label htmlFor="portrait" className="cursor-pointer">Книжная</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="square" id="square-orient" />
+                  <Label htmlFor="square-orient" className="cursor-pointer">Квадрат</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">Формат</Label>
+              <Select value={format} onValueChange={handleFormatChange}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(getFormats()).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">
+                Масштаб: {scale}%
+              </Label>
               <Slider
                 value={[scale]}
-                onValueChange={(v) => setScale(v[0])}
+                onValueChange={([v]) => setScale(v)}
                 min={10}
                 max={300}
-                step={1}
+                step={5}
                 disabled={!image}
               />
             </div>
-          </Card>
 
-          <Card className="p-6 space-y-4">
-            <h3 className="font-semibold text-lg">Трансформация</h3>
             <div className="grid grid-cols-3 gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRotate}
                 disabled={!image}
-                className="flex flex-col h-auto py-3 gap-1"
+                className="w-full"
               >
-                <Icon name="RotateCw" size={20} />
-                <span className="text-xs">Повернуть</span>
+                <Icon name="RotateCw" size={16} />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleFlipH}
                 disabled={!image}
-                className="flex flex-col h-auto py-3 gap-1"
+                className="w-full"
               >
-                <Icon name="FlipHorizontal" size={20} />
-                <span className="text-xs">Отр. гор.</span>
+                <Icon name="FlipHorizontal" size={16} />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleFlipV}
                 disabled={!image}
-                className="flex flex-col h-auto py-3 gap-1"
+                className="w-full"
               >
-                <Icon name="FlipVertical" size={20} />
-                <span className="text-xs">Отр. верт.</span>
+                <Icon name="FlipVertical" size={16} />
               </Button>
             </div>
-          </Card>
-
-          <Card className="p-6 space-y-3">
-            <h3 className="font-semibold text-lg">Инструкция</h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <div className="flex items-start gap-2">
-                <Icon name="Upload" size={16} className="mt-0.5 shrink-0" />
-                <span>Загрузите изображение</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Icon name="Maximize2" size={16} className="mt-0.5 shrink-0" />
-                <span>Выберите формат обрезки</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Icon name="Move" size={16} className="mt-0.5 shrink-0" />
-                <span>Перетащите изображение мышью</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Icon name="ZoomIn" size={16} className="mt-0.5 shrink-0" />
-                <span>Масштаб: слайдер или колёсико мыши</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Icon name="RotateCw" size={16} className="mt-0.5 shrink-0" />
-                <span>Трансформация: поворот и отражение</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Icon name="Download" size={16} className="mt-0.5 shrink-0" />
-                <span>Сохраните результат</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-primary/10 to-secondary/10">
-            <div className="space-y-2">
-              <h3 className="font-semibold">Совет</h3>
-              <p className="text-sm text-muted-foreground">
-                Используйте мышь для перемещения изображения внутри области обрезки. 
-                Слайдер масштаба поможет подогнать размер.
-              </p>
-            </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
