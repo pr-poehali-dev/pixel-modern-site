@@ -6,30 +6,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
-type Format = 'square' | '16:9' | '4:3' | '1:1' | '9:16';
+type Format = 'a4' | 'a3' | 'a2' | 'a1' | 'a0' | '20x30' | '30x40' | '40x50' | '40x60' | '50x70' | '60x80' | '70x90' | '80x120' | '90x120' | '100x120';
 
 const PixelEditor = () => {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [format, setFormat] = useState<Format>('square');
+  const [format, setFormat] = useState<Format>('a4');
   const [scale, setScale] = useState(100);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [rotation, setRotation] = useState(0);
+  const [flipH, setFlipH] = useState(false);
+  const [flipV, setFlipV] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const formatRatios: Record<Format, { width: number; height: number }> = {
-    'square': { width: 500, height: 500 },
-    '1:1': { width: 500, height: 500 },
-    '16:9': { width: 640, height: 360 },
-    '4:3': { width: 480, height: 360 },
-    '9:16': { width: 360, height: 640 },
+  const formatRatios: Record<Format, { width: number; height: number; label: string }> = {
+    'a4': { width: 420, height: 594, label: 'Формат А4 (210×297 мм)' },
+    'a3': { width: 594, height: 840, label: 'Формат А3 (297×420 мм)' },
+    'a2': { width: 840, height: 1188, label: 'Формат А2 (420×594 мм)' },
+    'a1': { width: 1188, height: 1682, label: 'Формат А1 (594×841 мм)' },
+    'a0': { width: 1682, height: 2378, label: 'Формат А0 (841×1189 мм)' },
+    '20x30': { width: 200, height: 300, label: '20×30 см' },
+    '30x40': { width: 300, height: 400, label: '30×40 см' },
+    '40x50': { width: 400, height: 500, label: '40×50 см' },
+    '40x60': { width: 400, height: 600, label: '40×60 см' },
+    '50x70': { width: 500, height: 700, label: '50×70 см' },
+    '60x80': { width: 600, height: 800, label: '60×80 см' },
+    '70x90': { width: 700, height: 900, label: '70×90 см' },
+    '80x120': { width: 800, height: 1200, label: '80×120 см' },
+    '90x120': { width: 900, height: 1200, label: '90×120 см' },
+    '100x120': { width: 1000, height: 1200, label: '100×120 см' },
   };
 
   useEffect(() => {
     drawCanvas();
-  }, [image, format, scale, position]);
+  }, [image, format, scale, position, rotation, flipH, flipV]);
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
@@ -49,13 +62,18 @@ const PixelEditor = () => {
     const imgWidth = image.width * scaleFactor;
     const imgHeight = image.height * scaleFactor;
 
+    ctx.save();
+    ctx.translate(position.x + imgWidth / 2, position.y + imgHeight / 2);
+    ctx.rotate((rotation * Math.PI) / 180);
+    ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
     ctx.drawImage(
       image,
-      position.x,
-      position.y,
+      -imgWidth / 2,
+      -imgHeight / 2,
       imgWidth,
       imgHeight
     );
+    ctx.restore();
 
     ctx.strokeStyle = '#9b87f5';
     ctx.lineWidth = 2;
@@ -149,8 +167,30 @@ const PixelEditor = () => {
   const handleReset = () => {
     if (image) {
       centerImage(image);
-      toast({ title: 'Изображение отцентрировано' });
+      setRotation(0);
+      setFlipH(false);
+      setFlipV(false);
+      toast({ title: 'Изображение сброшено' });
     }
+  };
+
+  const handleRotate = () => {
+    setRotation((prev) => (prev + 90) % 360);
+  };
+
+  const handleFlipH = () => {
+    setFlipH((prev) => !prev);
+  };
+
+  const handleFlipV = () => {
+    setFlipV((prev) => !prev);
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
+    if (!image) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    setScale((prev) => Math.max(10, Math.min(300, prev + delta)));
   };
 
   return (
@@ -213,6 +253,7 @@ const PixelEditor = () => {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
+                  onWheel={handleWheel}
                 />
               </div>
             )}
@@ -227,11 +268,21 @@ const PixelEditor = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="square">Квадрат (500×500)</SelectItem>
-                <SelectItem value="1:1">1:1 (500×500)</SelectItem>
-                <SelectItem value="16:9">16:9 (640×360)</SelectItem>
-                <SelectItem value="4:3">4:3 (480×360)</SelectItem>
-                <SelectItem value="9:16">9:16 (360×640)</SelectItem>
+                <SelectItem value="a4">{formatRatios.a4.label}</SelectItem>
+                <SelectItem value="a3">{formatRatios.a3.label}</SelectItem>
+                <SelectItem value="a2">{formatRatios.a2.label}</SelectItem>
+                <SelectItem value="a1">{formatRatios.a1.label}</SelectItem>
+                <SelectItem value="a0">{formatRatios.a0.label}</SelectItem>
+                <SelectItem value="20x30">{formatRatios['20x30'].label}</SelectItem>
+                <SelectItem value="30x40">{formatRatios['30x40'].label}</SelectItem>
+                <SelectItem value="40x50">{formatRatios['40x50'].label}</SelectItem>
+                <SelectItem value="40x60">{formatRatios['40x60'].label}</SelectItem>
+                <SelectItem value="50x70">{formatRatios['50x70'].label}</SelectItem>
+                <SelectItem value="60x80">{formatRatios['60x80'].label}</SelectItem>
+                <SelectItem value="70x90">{formatRatios['70x90'].label}</SelectItem>
+                <SelectItem value="80x120">{formatRatios['80x120'].label}</SelectItem>
+                <SelectItem value="90x120">{formatRatios['90x120'].label}</SelectItem>
+                <SelectItem value="100x120">{formatRatios['100x120'].label}</SelectItem>
               </SelectContent>
             </Select>
           </Card>
@@ -253,6 +304,42 @@ const PixelEditor = () => {
             </div>
           </Card>
 
+          <Card className="p-6 space-y-4">
+            <h3 className="font-semibold text-lg">Трансформация</h3>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRotate}
+                disabled={!image}
+                className="flex flex-col h-auto py-3 gap-1"
+              >
+                <Icon name="RotateCw" size={20} />
+                <span className="text-xs">Повернуть</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleFlipH}
+                disabled={!image}
+                className="flex flex-col h-auto py-3 gap-1"
+              >
+                <Icon name="FlipHorizontal" size={20} />
+                <span className="text-xs">Отр. гор.</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleFlipV}
+                disabled={!image}
+                className="flex flex-col h-auto py-3 gap-1"
+              >
+                <Icon name="FlipVertical" size={20} />
+                <span className="text-xs">Отр. верт.</span>
+              </Button>
+            </div>
+          </Card>
+
           <Card className="p-6 space-y-3">
             <h3 className="font-semibold text-lg">Инструкция</h3>
             <div className="space-y-2 text-sm text-muted-foreground">
@@ -270,7 +357,11 @@ const PixelEditor = () => {
               </div>
               <div className="flex items-start gap-2">
                 <Icon name="ZoomIn" size={16} className="mt-0.5 shrink-0" />
-                <span>Измените масштаб слайдером</span>
+                <span>Масштаб: слайдер или колёсико мыши</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Icon name="RotateCw" size={16} className="mt-0.5 shrink-0" />
+                <span>Трансформация: поворот и отражение</span>
               </div>
               <div className="flex items-start gap-2">
                 <Icon name="Download" size={16} className="mt-0.5 shrink-0" />
