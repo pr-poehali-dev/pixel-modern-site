@@ -63,10 +63,7 @@ const Index = () => {
               <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent relative">
                 MARlik Pixel Mix
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Профессиональный редактор для подготовки изображений к печати. 
-                Обрезайте, масштабируйте и трансформируйте под нужный формат.
-              </p>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">Профессиональный редактор для создания  мозаики. </p>
               <div className="flex gap-4 justify-center pt-4">
                 <Button 
                   size="lg" 
