@@ -127,7 +127,7 @@ const Index = () => {
 
       <footer className="border-t border-border mt-20 py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>© 2024 MARlik Pixel Mix. Профессиональная подготовка изображений</p>
+          <p>© 2025 MARlik Pixel Mix. Профессиональный редактор создания пиксельных изображений.</p>
         </div>
       </footer>
     </div>
