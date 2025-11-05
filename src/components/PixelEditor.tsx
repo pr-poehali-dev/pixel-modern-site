@@ -256,19 +256,10 @@ const PixelEditor = () => {
 
   const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
     if (!image) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    if (mouseX >= 0 && mouseX <= rect.width && mouseY >= 0 && mouseY <= rect.height) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -5 : 5;
-      setScale((prev) => Math.max(10, Math.min(300, prev + delta)));
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    setScale((prev) => Math.max(10, Math.min(300, prev + delta)));
   };
 
   const showBaseTypeSelector = mosaicType === 'round' || mosaicType === 'square';
@@ -368,8 +359,8 @@ const PixelEditor = () => {
           </div>
 
           {image && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div>
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
                 <Label className="text-xs mb-1 block">Масштаб: {scale}%</Label>
                 <Slider
                   value={[scale]}
@@ -377,28 +368,36 @@ const PixelEditor = () => {
                   min={10}
                   max={300}
                   step={5}
-                  className="mb-2"
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={handleRotate}
-                  className="flex-1"
-                ></Button>
+                  className="h-9 w-9"
+                  title="Повернуть"
+                >
+                  <Icon name="RotateCw" size={16} />
+                </Button>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={handleFlipH}
-                  className="flex-1"
-                ></Button>
+                  className="h-9 w-9"
+                  title="Отразить горизонтально"
+                >
+                  <Icon name="FlipHorizontal" size={16} />
+                </Button>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={handleFlipV}
-                  className="flex-1"
-                ></Button>
+                  className="h-9 w-9"
+                  title="Отразить вертикально"
+                >
+                  <Icon name="FlipVertical" size={16} />
+                </Button>
               </div>
             </div>
           )}
@@ -413,15 +412,17 @@ const PixelEditor = () => {
 
           {!image ? (
             <div 
-              className="border-2 border-dashed border-border rounded-lg p-12 text-center cursor-pointer hover:border-primary transition-colors"
+              className="h-[500px] border-2 border-dashed border-border rounded-lg flex items-center justify-center text-center cursor-pointer hover:border-primary transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Icon name="ImagePlus" size={48} className="mx-auto mb-3 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-1">Загрузите изображение</h3>
-              <p className="text-sm text-muted-foreground">Нажмите или перетащите файл</p>
+              <div>
+                <Icon name="ImagePlus" size={48} className="mx-auto mb-3 text-muted-foreground" />
+                <h3 className="text-lg font-semibold mb-1">Загрузите изображение</h3>
+                <p className="text-sm text-muted-foreground">Нажмите или перетащите файл</p>
+              </div>
             </div>
           ) : (
-            <div className="overflow-auto max-h-[70vh] border-2 border-border rounded-lg">
+            <div className="h-[500px] overflow-auto border-2 border-border rounded-lg flex items-center justify-center bg-gray-900">
               <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
@@ -429,7 +430,7 @@ const PixelEditor = () => {
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 onWheel={handleWheel}
-                className="cursor-move max-w-full h-auto"
+                className="cursor-move max-w-full max-h-full object-contain"
               />
             </div>
           )}

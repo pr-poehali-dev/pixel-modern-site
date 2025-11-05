@@ -8,6 +8,7 @@ import Instructions from '@/components/Instructions';
 import About from '@/components/About';
 import Contacts from '@/components/Contacts';
 import MosaicDecor from '@/components/MosaicDecor';
+import MosaicTypeAnimation from '@/components/MosaicTypeAnimation';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -85,21 +86,21 @@ const Index = () => {
             <section className="grid md:grid-cols-3 gap-6">
               {[
                 {
-                  icon: 'Crop',
-                  title: 'Точная обрезка',
-                  desc: 'Форматы А0-А4 и популярные размеры для печати',
+                  type: 'lego' as const,
+                  title: 'ЛЕГО',
+                  desc: 'Классические блоки для яркой мозаики',
                   color: 'from-primary to-purple-600'
                 },
                 {
-                  icon: 'Move',
-                  title: 'Удобное управление',
-                  desc: 'Перемещение мышью, масштаб колёсиком, трансформация',
+                  type: 'round' as const,
+                  title: 'Круглые стразы',
+                  desc: 'Блестящие кристаллы для эффектного блеска',
                   color: 'from-secondary to-pink-600'
                 },
                 {
-                  icon: 'Download',
-                  title: 'Готово к печати',
-                  desc: 'Экспорт в высоком качестве PNG',
+                  type: 'square' as const,
+                  title: 'Квадратные стразы',
+                  desc: 'Плотная укладка без зазоров',
                   color: 'from-accent to-blue-600'
                 }
               ].map((feature, i) => (
@@ -109,14 +110,14 @@ const Index = () => {
                   contentEditable
                   suppressContentEditableWarning
                 >
-                  <div className="absolute -top-2 -right-2">
-                    <MosaicDecor type={i === 0 ? 'round' : i === 1 ? 'square' : 'lego'} />
+                  <div className="absolute -top-2 -right-2 opacity-20">
+                    <MosaicDecor type={feature.type} />
                   </div>
-                  <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} flex items-center justify-center relative`}>
-                    <Icon name={feature.icon as any} size={24} className="text-white" />
+                  <div className={`w-24 h-24 mx-auto bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center p-2`}>
+                    <MosaicTypeAnimation type={feature.type} />
                   </div>
-                  <h3 className="text-xl font-semibold" contentEditable suppressContentEditableWarning>{feature.title}</h3>
-                  <p className="text-muted-foreground" contentEditable suppressContentEditableWarning>{feature.desc}</p>
+                  <h3 className="text-xl font-semibold text-center" contentEditable suppressContentEditableWarning>{feature.title}</h3>
+                  <p className="text-muted-foreground text-center" contentEditable suppressContentEditableWarning>{feature.desc}</p>
                 </Card>
               ))}
             </section>
