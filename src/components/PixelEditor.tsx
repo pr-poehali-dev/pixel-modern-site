@@ -386,28 +386,19 @@ const PixelEditor = () => {
                   size="sm"
                   onClick={handleRotate}
                   className="flex-1"
-                >
-                  <Icon name="RotateCw" size={16} className="mr-1" />
-                  Повернуть
-                </Button>
+                ></Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleFlipH}
                   className="flex-1"
-                >
-                  <Icon name="FlipHorizontal" size={16} className="mr-1" />
-                  Отразить Г
-                </Button>
+                ></Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleFlipV}
                   className="flex-1"
-                >
-                  <Icon name="FlipVertical" size={16} className="mr-1" />
-                  Отразить В
-                </Button>
+                ></Button>
               </div>
             </div>
           )}
