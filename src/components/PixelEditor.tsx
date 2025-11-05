@@ -36,39 +36,39 @@ const PixelEditor = () => {
   const { toast } = useToast();
 
   const landscapeFormats: Record<string, FormatOption> = {
-    'a4': { width: 420, height: 594, label: 'Формат А4 (210x297)' },
-    'a3': { width: 594, height: 840, label: 'Формат А3 (297x420)' },
-    'a2': { width: 840, height: 1188, label: 'Формат А2 (420x594)' },
-    'a1': { width: 1188, height: 1682, label: 'Формат А1 (594x841)' },
-    'a0': { width: 1682, height: 2378, label: 'Формат А0 (841x1189)' },
-    '20x30': { width: 200, height: 300, label: '20x30 см.' },
-    '30x40': { width: 300, height: 400, label: '30x40 см.' },
-    '40x50': { width: 400, height: 500, label: '40x50 см.' },
-    '40x60': { width: 400, height: 600, label: '40x60 см.' },
-    '50x70': { width: 500, height: 700, label: '50x70 см.' },
-    '60x80': { width: 600, height: 800, label: '60x80 см.' },
-    '70x90': { width: 700, height: 900, label: '70x90 см.' },
-    '80x120': { width: 800, height: 1200, label: '80x120 см.' },
-    '90x120': { width: 900, height: 1200, label: '90x120 см.' },
-    '100x120': { width: 1000, height: 1200, label: '100x120 см.' },
+    'a4': { width: 297, height: 210, label: 'Формат А4 (210x297)' },
+    'a3': { width: 420, height: 297, label: 'Формат А3 (297x420)' },
+    'a2': { width: 594, height: 420, label: 'Формат А2 (420x594)' },
+    'a1': { width: 841, height: 594, label: 'Формат А1 (594x841)' },
+    'a0': { width: 1189, height: 841, label: 'Формат А0 (841x1189)' },
+    '20x30': { width: 300, height: 200, label: '20x30 см.' },
+    '30x40': { width: 400, height: 300, label: '30x40 см.' },
+    '40x50': { width: 500, height: 400, label: '40x50 см.' },
+    '40x60': { width: 600, height: 400, label: '40x60 см.' },
+    '50x70': { width: 700, height: 500, label: '50x70 см.' },
+    '60x80': { width: 800, height: 600, label: '60x80 см.' },
+    '70x90': { width: 900, height: 700, label: '70x90 см.' },
+    '80x120': { width: 1200, height: 800, label: '80x120 см.' },
+    '90x120': { width: 1200, height: 900, label: '90x120 см.' },
+    '100x120': { width: 1200, height: 1000, label: '100x120 см.' },
   };
 
   const portraitFormats: Record<string, FormatOption> = {
-    'a4': { width: 594, height: 420, label: 'Формат А4 (297x210)' },
-    'a3': { width: 840, height: 594, label: 'Формат А3 (420x297)' },
-    'a2': { width: 1188, height: 840, label: 'Формат А2 (594x420)' },
-    'a1': { width: 1682, height: 1188, label: 'Формат А1 (841x594)' },
-    'a0': { width: 2378, height: 1682, label: 'Формат А0 (1189x841)' },
-    '30x20': { width: 300, height: 200, label: '30x20 см.' },
-    '40x30': { width: 400, height: 300, label: '40x30 см.' },
-    '50x40': { width: 500, height: 400, label: '50x40 см.' },
-    '60x40': { width: 600, height: 400, label: '60x40 см.' },
-    '70x50': { width: 700, height: 500, label: '70x50 см.' },
-    '80x60': { width: 800, height: 600, label: '80x60 см.' },
-    '90x70': { width: 900, height: 700, label: '90x70 см.' },
-    '120x80': { width: 1200, height: 800, label: '120x80 см.' },
-    '120x90': { width: 1200, height: 900, label: '120x90 см.' },
-    '120x100': { width: 1200, height: 1000, label: '120x100 см.' },
+    'a4': { width: 210, height: 297, label: 'Формат А4 (297x210)' },
+    'a3': { width: 297, height: 420, label: 'Формат А3 (420x297)' },
+    'a2': { width: 420, height: 594, label: 'Формат А2 (594x420)' },
+    'a1': { width: 594, height: 841, label: 'Формат А1 (841x594)' },
+    'a0': { width: 841, height: 1189, label: 'Формат А0 (1189x841)' },
+    '30x20': { width: 200, height: 300, label: '30x20 см.' },
+    '40x30': { width: 300, height: 400, label: '40x30 см.' },
+    '50x40': { width: 400, height: 500, label: '50x40 см.' },
+    '60x40': { width: 400, height: 600, label: '60x40 см.' },
+    '70x50': { width: 500, height: 700, label: '70x50 см.' },
+    '80x60': { width: 600, height: 800, label: '80x60 см.' },
+    '90x70': { width: 700, height: 900, label: '90x70 см.' },
+    '120x80': { width: 800, height: 1200, label: '120x80 см.' },
+    '120x90': { width: 900, height: 1200, label: '120x90 см.' },
+    '120x100': { width: 1000, height: 1200, label: '120x100 см.' },
   };
 
   const squareFormats: Record<string, FormatOption> = {
@@ -120,8 +120,11 @@ const PixelEditor = () => {
     if (!ctx) return;
 
     const dimensions = getCurrentDimensions();
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+    const containerHeight = 500;
+    const aspectRatio = dimensions.width / dimensions.height;
+    
+    canvas.height = containerHeight;
+    canvas.width = containerHeight * aspectRatio;
 
     ctx.fillStyle = '#1F2937';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -176,15 +179,19 @@ const PixelEditor = () => {
 
   const centerImage = (img: HTMLImageElement) => {
     const dimensions = getCurrentDimensions();
-    const scaleFactor = Math.min(
-      dimensions.width / img.width,
-      dimensions.height / img.height
+    const containerHeight = 500;
+    const aspectRatio = dimensions.width / dimensions.height;
+    const containerWidth = containerHeight * aspectRatio;
+    
+    const scaleFactor = Math.max(
+      containerWidth / img.width,
+      containerHeight / img.height
     );
     
     setScale(scaleFactor * 100);
     setPosition({
-      x: (dimensions.width - img.width * scaleFactor) / 2,
-      y: (dimensions.height - img.height * scaleFactor) / 2,
+      x: (containerWidth - img.width * scaleFactor) / 2,
+      y: (containerHeight - img.height * scaleFactor) / 2,
     });
   };
 
