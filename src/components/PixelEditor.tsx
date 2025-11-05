@@ -104,7 +104,11 @@ const PixelEditor = () => {
   useEffect(() => {
     const formats = getFormats();
     if (!formats[format]) {
-      setFormat(Object.keys(formats)[0]);
+      const newFormat = Object.keys(formats)[0];
+      setFormat(newFormat);
+      if (image) {
+        setTimeout(() => centerImage(image), 0);
+      }
     }
   }, [orientation]);
 
